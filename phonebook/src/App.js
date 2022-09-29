@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 const _ = require('loadsh')
 
 const Filter = ({ searchValue, setSearchValue }) => {
@@ -47,13 +48,15 @@ const Persons = ({ persons, setPersons, searchValue }) => {
 
 function App() {
   const [persons, setPersons] = useState([
-    { name: '阿里巴巴', number: '110', id: 0 },
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+    { name: '阿里巴巴', number: '110', id: 0 }
   ])
   const [searchValue, setSearchValue] = useState('')
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/persons').then((res) => {
+      setPersons(res.data)
+    })
+  }, [])
 
   return (
     <div>
