@@ -1,52 +1,38 @@
-const Header = ({ course }) => {
-  return (
-    <>
-      <h1>{course.name}</h1>
-    </>
-  )
-}
-
-const Content = ({ parts }) => {
-  return (
-    <>
-      {parts.map((part => <p>{part.name} {part.exercises}</p>))}
-    </>
-  )
-}
-
-const Total = ({ parts }) => {
-  const getSum = (total, num) => total + num
-  return (
-    <>
-      Number of exercises {parts.map(part => part.exercises).reduce(getSum)}
-    </>
-  )
-}
+import Course from "./components/Course"
 
 const App = () => {
-  const course = {
-    name: 'Half Stack application development',
-    parts: [{
-      name: 'Fundamentals of React',
-      exercises: 10
+  const courses = [
+    {
+      name: '半栈开发',
+      id: 1,
+      parts: [{
+        name: 'React基础',
+        exercises: 10
+      },
+      {
+        name: '参数传递与数据通信',
+        exercises: 7
+      },
+      {
+        name: '组件状态',
+        exercises: 14
+      }]
     },
     {
-      name: 'Using props to pass data',
-      exercises: 7
+      name: 'NodeJS',
+      id: 2,
+      parts: [{
+        name: '路由',
+        exercises: 10
+      },
+      {
+        name: '中间件',
+        exercises: 7
+      }]
     },
-    {
-      name: 'State of a component',
-      exercises: 14
-    }]
-  }
+  ]
 
-  return (
-    <div>
-      <Header course={course} />
-      <Content parts={course.parts} />
-      <Total parts={course.parts} />
-    </div>
-  )
+  return <Course courses={courses} />
 }
 
 export default App
