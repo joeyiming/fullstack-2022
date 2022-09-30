@@ -49,12 +49,13 @@ function CountryInfo({ country }) {
 function Results({ results }) {
   const [countryList, setCountryList] = useState(results.map(result => { result.toggle = false; return result }))
   const toggleInfo = (country) => {
+    console.log('toggling...');
     const copyCountryList = [...countryList]
-    copyCountryList.map(c => {
+    for (const c of copyCountryList) {
       if (c.name.common === country.name.common) {
         c.toggle = !c.toggle
       }
-    })
+    }
     setCountryList(copyCountryList)
   }
   return (
