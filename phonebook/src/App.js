@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 const _ = require('loadsh')
 
 const Filter = ({ searchValue, setSearchValue }) => {
@@ -15,12 +15,27 @@ const PersonForm = ({ persons, setPersons }) => {
   const [newNumber, setNewNumber] = useState('')
   const onSubmit = (e) => {
     e.preventDefault()
-    if (_.find(persons, { name: newName })) {
-      alert(`用户 ${newName} 已存在！`)
+    const foundPerson = _.find(persons, { name: newName })
+    if (foundPerson && newNumber) {
+      if (window.confirm(`${newName} 已存在，是否更新用户信息？`)) {
+        const newPerson = { ...foundPerson, number: newNumber }
+        personService
+          .update(foundPerson.id, newPerson)
+          .then((res) => {
+            const newPersons = [...persons.filter(person => person.name !== newName), res.data]
+            setPersons(newPersons)
+          })
+      }
     } else if (!newName || !newNumber) {
       alert(`信息不完整！`)
     } else {
-      setPersons([...persons, { name: newName, number: newNumber }])
+      const newPerson = { name: newName, number: newNumber }
+      personService
+        .create(newPerson)
+        .then((res) => {
+          const newPersons = [...persons, res.data]
+          setPersons(newPersons)
+        })
     }
   }
   return (
@@ -39,9 +54,16 @@ const PersonForm = ({ persons, setPersons }) => {
 }
 
 const Persons = ({ persons, setPersons, searchValue }) => {
+  const onRemove = (person) => {
+    if (window.confirm(`你确定要删除 ${person.name} ？`)) {
+      personService.remove(person.id).then(res => {
+        setPersons(persons.filter(p => p.id !== person.id))
+      })
+    }
+  }
   return (
     <>
-      {persons.filter(person => person.name.toLowerCase().includes(searchValue.toLowerCase())).map(person => <div>{person.name} {person.number}</div>)}
+      {persons.filter(person => person.name.toLowerCase().includes(searchValue.toLowerCase())).map(person => <div>{person.name} {person.number} <button onClick={() => onRemove(person)}>删除</button> </div>)}
     </>
   )
 }
@@ -53,9 +75,11 @@ function App() {
   const [searchValue, setSearchValue] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then((res) => {
-      setPersons(res.data)
-    })
+    personService
+      .getAll()
+      .then((res) => {
+        setPersons(res.data)
+      })
   }, [])
 
   return (
