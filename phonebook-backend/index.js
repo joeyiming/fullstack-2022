@@ -29,7 +29,7 @@ let persons = [
 
 app.use(express.json())
 
-morgan.token('body',(req,res)=>{
+morgan.token('body', (req, res) => {
   return JSON.stringify(req.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
@@ -62,6 +62,24 @@ app.get('/info', (req, res) => {
     <p>时间：${new Date()}</p>
   `
   res.send(content)
+})
+
+app.put('/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  const foundPerson = _.find(persons, { id: id })
+  if (foundPerson) {
+    const body = req.body
+    const newPerson = {...foundPerson}
+    if (body.name) {
+      newPerson.name = body.name
+    }
+    if (body.number) {
+      newPerson.number = body.number
+    }
+    res.status(200).send(newPerson)
+  } else {
+    res.status(404).end()
+  }
 })
 
 app.delete('/persons/:id', (req, res) => {
