@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
 const _ = require('loadsh')
@@ -26,17 +27,12 @@ let persons = [
   }
 ]
 
-const requestLogger = (request, response, next) => {
-  console.log('Method:', request.method)
-  console.log('Path:  ', request.path)
-  console.log('Body:  ', request.body)
-  console.log('---')
-  next()
-}
-
 app.use(express.json())
 
-app.use(requestLogger)
+morgan.token('body',(req,res)=>{
+  return JSON.stringify(req.body)
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.use(cors())
 
@@ -68,8 +64,41 @@ app.get('/info', (req, res) => {
   res.send(content)
 })
 
-// TODO DELETE
-// TODO POST
+app.delete('/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  if (_.find(persons, { id: id })) {
+    persons = persons.filter(person => person.id !== id)
+    res.status(200).send(persons)
+  } else {
+    res.status(404).end()
+  }
+})
+
+app.post('/persons', (req, res) => {
+  const body = req.body
+  const generateNewId = () => {
+    const maxId = Math.max(...persons.map(persons => persons.id))
+    return maxId + 1
+  }
+  if (body.name && body.number) {
+    if (!_.find(persons, { name: body.name })) {
+      const newPerson = { id: generateNewId(), ...body }
+      persons = [...persons, newPerson]
+      // console.log(persons)
+      res.status(200).send(newPerson)
+    } else {
+      const msg = {
+        error: `[POST] 用户 ${body.name} 已存在`
+      }
+      res.status(400).send(msg)
+    }
+  } else {
+    const msg = {
+      error: '[POST] 信息不完整'
+    }
+    res.status(400).send(msg)
+  }
+})
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
