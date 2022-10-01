@@ -36,6 +36,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 app.use(cors())
 
+// 根目录请求将返回/build/index.html
 app.use(express.static('build'))
 
 app.get('/', (req, res) => {
