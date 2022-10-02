@@ -5,6 +5,10 @@ const {connectToDatabase} = require('./utils/db')
 
 app.use('/blogs',blogsRouter)
 
+app.get('/',(req,res)=>{
+  res.send('<h1>Blog App API</h1>')
+})
+
 const start = async()=>{
   await connectToDatabase()
   app.listen(PORT, () => {

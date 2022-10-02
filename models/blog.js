@@ -31,7 +31,9 @@ Blog.init({
   timestamps: false,
   modelName: 'blog'
 })
-Blog.sync()
+
+// 重置 blogs 表
+// Blog.sync()
 
 
 module.exports = Blog
