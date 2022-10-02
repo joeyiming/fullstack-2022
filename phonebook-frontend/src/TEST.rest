@@ -1,9 +1,0 @@
-DELETE http://localhost:3001/persons/5
-
-###
-PUT http://localhost:3001/persons/5
-content-type: application/json
-
-{
-    "number":"999"
-}

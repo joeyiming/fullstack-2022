@@ -1,5 +1,5 @@
 {
-  "name": "phonebook-backend",
+  "name": "part13",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,11 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
-    "loadsh": "^0.0.4",
-    "morgan": "^1.10.0",
     "pg": "^8.8.0",
     "sequelize": "^6.23.2"
   },

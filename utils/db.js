@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize')
 const { DATABASE_URL } = require('./config')
+const { Sequelize } = require('sequelize')
 
 const sequelize = new Sequelize(DATABASE_URL, {
   dialectOptions: {
@@ -8,18 +8,19 @@ const sequelize = new Sequelize(DATABASE_URL, {
       rejectUnauthorized: false
     }
   },
-});
+})
 
 const connectToDatabase = async () => {
   try {
     await sequelize.authenticate()
-    console.log('connected to the database')
-  } catch (err) {
-    console.log('failed to connect to the database')
-    return process.exit(1)
+    console.log('Connection has been established successfully.')
+    // sequelize.close()
+  } catch (error) {
+    console.error('Unable to connect to the database:', error)
   }
-
-  return null
 }
 
-module.exports = { connectToDatabase, sequelize }
+module.exports = {
+  connectToDatabase,
+  sequelize
+}

@@ -1,10 +1,9 @@
 const router = require('express').Router()
-
-const { Person } = require('../models')
+const Blog = require('../models/blog')
 
 router.get('/', async (req, res) => {
-  const persons = await Person.findAll()
-  res.json(persons)
+  const blogs = await Blog.findAll()
+  res.json(blogs)
 })
 
 module.exports = router
