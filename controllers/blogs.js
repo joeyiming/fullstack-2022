@@ -6,4 +6,14 @@ router.get('/', async (req, res) => {
   res.json(blogs)
 })
 
+router.get('/:id',async (req,res)=>{
+  // 这里Pk的含义是 Primary Key
+  const blog = await Blog.findByPk(req.params.id)
+  if (blog) {
+    res.json(blog)
+  }else{
+    res.status(404).end()
+  }
+})
+
 module.exports = router
