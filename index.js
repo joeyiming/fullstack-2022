@@ -1,7 +1,11 @@
 const { PORT } = require('./utils/config')
-const app = require('express')()
+const express = require('express')
+require('express-async-errors')
+const app = express()
 const blogsRouter = require('./controllers/blogs')
 const {connectToDatabase} = require('./utils/db')
+
+app.use(express.json()) //built-in body-parser
 
 app.use('/blogs',blogsRouter)
 

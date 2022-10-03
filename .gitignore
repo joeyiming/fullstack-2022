@@ -2,3 +2,4 @@
 node_modules
 sheltered-oasis-36821/
 .DS_Store
+*.rest

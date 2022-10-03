@@ -1,6 +1,6 @@
 const { QueryTypes } = require('sequelize')
 const { sequelize } = require('./utils/db')
-const sql = 'SELECT * FROM blogs'
+const sql = "insert into blogs (title,author,url) values ('hello world','ben','www.ben.org')"
 
 const main = async () => {
   const results = await sequelize.query(sql, { type: QueryTypes.SELECT })
