@@ -32,8 +32,4 @@ Blog.init({
   modelName: 'blog'
 })
 
-// 重置 blogs 表
-// Blog.sync()
-
-
 module.exports = Blog

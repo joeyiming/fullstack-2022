@@ -1,17 +1,29 @@
 const { PORT } = require('./utils/config')
 const express = require('express')
-require('express-async-errors')
 const app = express()
+require('express-async-errors')
+
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
 const {connectToDatabase} = require('./utils/db')
+const middleware = require('./utils/middleware')
 
 app.use(express.json()) //built-in body-parser
-
-app.use('/blogs',blogsRouter)
 
 app.get('/',(req,res)=>{
   res.send('<h1>Blog App API</h1>')
 })
+
+// app.use(cors())
+// app.use(express.static('build'))
+
+app.use('/blogs',blogsRouter)
+app.use('/users',usersRouter)
+app.use('/login',loginRouter)
+
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
 const start = async()=>{
   await connectToDatabase()
