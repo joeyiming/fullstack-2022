@@ -17,17 +17,19 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const { username, name, password } = req.body
+  const { username, name, password, email } = req.body
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
-  const user = new User({
+  const user = {
     username,
     name,
     passwordHash,
-  })
-  const savedUser = await user.save()
+    email
+  }
+  const newUser = User.build(user)
+  await newUser.save()
 
-  response.status(201).json(savedUser)
+  res.status(201).json(newUser)
 })
 
 router.delete('/:id', async (req, res) => {

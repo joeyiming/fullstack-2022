@@ -31,9 +31,7 @@ User.init({
   },
   passwordHash: {
     type: DataTypes.STRING,
-    validate: {
-      isAlphanumeric: true
-    }
+    allowNull: false
   }
 }, {
   sequelize,
