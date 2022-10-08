@@ -7,10 +7,13 @@ const User = require('../models/user')
 
 router.post('/', async (req, res) => {
   const { username, password } = req.body
+  // console.log(username);
 
-  const user = await User.findOne({ username })
+  const user = await User.findOne({ where:{username:username} })
+  // console.log(user);
 
   const passwordCorrect = user === null ? false : await bcypt.compare(password, user.passwordHash)
+  // console.log(passwordCorrect);
 
   if (!(user && passwordCorrect)) {
     return res.status(401).json({

@@ -1,8 +1,25 @@
 const router = require('express').Router()
-const { Blog } = require('../models/index')
+const jwt = require('jsonwebtoken')
+const { SECRET } = require('../utils/config')
+const { Blog, User } = require('../models/index')
+
+const getTokenFrom = req => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
 
 router.get('/', async (req, res) => {
-  const blogs = await Blog.findAll()
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ['userId'] },
+    include: {
+      model: User,
+      attributes: ['name']
+    }
+    // attributes: ['title']
+  })
   res.json(blogs)
 })
 
@@ -18,17 +35,28 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const body = req.body
-  try {
-    const newBlog = Blog.build(body)
-    await newBlog.save()
-    res.json(newBlog)
-  } catch (error) {
-    return res.status(400).send(error)
+  const token = getTokenFrom(req)
+  const decodedToken = jwt.verify(token, SECRET)
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: 'token missing or invalid' })
   }
+  const user = await User.findByPk(decodedToken.id)
+  const newBlog = Blog.build({ ...body, userId: user.id })
+  await newBlog.save()
+  res.json(newBlog)
 })
 
 router.delete('/:id', async (req, res) => {
-  const blog = Blog.findByPk(req.params.id)
+  const blog = await Blog.findByPk(req.params.id)
+  const token = getTokenFrom(req)
+  const decodedToken = jwt.verify(token, SECRET)
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: 'token missing or invalid' })
+  }
+  if (blog.userId !== decodedToken.id) {
+    // console.log(blog);
+    return res.status(401).json({ error: 'permission denied' })
+  }
   if (blog) {
     await blog.destroy()
   }
