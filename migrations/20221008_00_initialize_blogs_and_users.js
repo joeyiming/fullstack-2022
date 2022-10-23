@@ -51,12 +51,12 @@ module.exports = {
           isEmail: true
         }
       },
-      passwordHash: {
+      password_hash: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      updatedAt: DataTypes.DATE,
-      createdAt: DataTypes.DATE
+      updated_at: DataTypes.DATE,
+      created_at: DataTypes.DATE
     })
     await queryInterface.addColumn('blogs', 'user_id', {
       type: DataTypes.INTEGER,

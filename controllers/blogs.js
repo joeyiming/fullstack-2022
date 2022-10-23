@@ -32,13 +32,27 @@ router.get('/', async (req, res) => {
   }
   const blogs = await Blog.findAll({
     order: [
-      ['likes','DESC']
+      ['likes', 'DESC']
     ],
     attributes: { exclude: ['userId'] },
-    include: {
-      model: User,
-      attributes: ['name']
-    },
+    include: [
+      {
+        model: User,
+        // 这是 belongsTo(User)产生的 user 属性
+        attributes: ["id","name"]
+      },
+      {
+        model: User,
+        as: 'reader',
+        // 这是 belongsToMany(User...)产生的 user 属性
+        attributes: ["id", "name"],
+        through: {
+          // 移除连接表的信息
+          attributes:[]
+        }
+      }
+    ],
+    // 只在必要时进行查询
     where
   })
   res.json(blogs)
@@ -55,16 +69,17 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const body = req.body
+  // 取token
   const token = getTokenFrom(req)
   const decodedToken = jwt.verify(token, SECRET)
   if (!decodedToken.id) {
     return res.status(401).json({ error: 'token missing or invalid' })
   }
   const user = await User.findByPk(decodedToken.id)
-  const newBlog = Blog.build({ ...body, userId: user.id })
-  await newBlog.save()
-  res.json(newBlog)
+
+  // 建blog
+  const blog = await Blog.create({ userId: user.dataValues.id, ...req.body })
+  res.json(blog)
 })
 
 router.delete('/:id', async (req, res) => {

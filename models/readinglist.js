@@ -2,40 +2,27 @@ const { Model, DataTypes } = require('sequelize')
 
 const { sequelize } = require('../utils/db')
 
-class Blog extends Model { }
+class Readinglist extends Model { }
 
-Blog.init({
+Readinglist.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  title:{
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  author: {
-    type: DataTypes.STRING
-  },
-  url: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  likes: {
+  blogId: {
     type: DataTypes.INTEGER,
-    defaultValue: 0
-  },
-  year: {
-    type: DataTypes.INTEGER,
-    validate: {
-      min: 1971,
-      max: new Date().getFullYear()
-    }
+    allowNull: false,
+    references: { model: 'blogs', key: 'id' },
   },
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: { model: 'users', key: 'id' },
+  },
+  read: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   sequelize,
@@ -43,4 +30,4 @@ Blog.init({
   timestamps: false
 })
 
-module.exports = Blog
+module.exports = Readinglist
