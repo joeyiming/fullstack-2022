@@ -1,24 +1,27 @@
 const router = require('express').Router()
 const { User, Blog, Readinglist } = require('../models/index')
 
+const getTokenFrom = req => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
+
 router.get('/', async (req, res) => {
   const readinglists = await Readinglist.findAll()
   res.json(readinglists)
 })
 
-// TODO
 router.post('/', async (req, res) => {
   const { blogId, userId } = req.body
   const blog = await Blog.findByPk(blogId)
   const user = await User.findByPk(userId)
   if (blog && user) {
-    // console.log(blog);
-    // console.log(user);
-    // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-    // console.log(await blog.getReaders());
-    // console.log(await user.getReadingBlogs());
-    // console.log(User.associations);
+    // https://stackoverflow.com/questions/55692731/aggregate-error-when-trying-to-use-many-to-many-table-with-sequelize
     try {
+      // 这个through必须这么传递？翻遍官方文档都没看见这么说啊！
       await user.addReadingBlog(blog, {
         through: { blogId: blogId, userId: userId, read: false }
       })
@@ -27,6 +30,19 @@ router.post('/', async (req, res) => {
     }
     res.json(user)
   } else {
+    res.status(400).end()
+  }
+})
+
+router.put('/:id',async (req,res)=>{
+  const body = req.body
+  const id = req.params.id
+  const readinglist = await Readinglist.findByPk(id)
+  if (readinglist) {
+    readinglist.read = body.read
+    await readinglist.save()
+    res.json(readinglist)
+  }else{
     res.status(400).end()
   }
 })
